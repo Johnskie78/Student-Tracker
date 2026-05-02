@@ -49,7 +49,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[url('/backgroud.jpg')] bg-cover bg-center bg-no-repeat px-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center font-sans bg-cover bg-center bg-no-repeat bg-fixed animate-in fade-in duration-700"style={{ 
+    backgroundImage: "linear-gradient(rgba(51, 50, 50, 0.53), rgba(51, 50, 50, 0.53)), url('/background.jpg')" }}>
       {/* Decorative Overlay */}
       <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[2px]" />
 

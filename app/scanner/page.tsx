@@ -19,7 +19,8 @@ export default function PublicScannerPage() {
 
   return (
     // Changed background to a soft slate to make the white kiosk "pop"
-    <main className="min-h-screen flex flex-col bg-slate-100 antialiased font-sans">
+    <main className="min-h-screen flex flex-col antialiased font-sans bg-cover bg-center bg-no-repeat bg-fixed animate-in fade-in duration-700"style={{ 
+    backgroundImage: "linear-gradient(rgba(51, 50, 50, 0.53), rgba(51, 50, 50, 0.53)), url('/background.jpg')" }}>
       {/* PROFESSIONAL KIOSK HEADER */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/60">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">

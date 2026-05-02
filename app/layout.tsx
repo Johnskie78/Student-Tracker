@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react"
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter, Poppins } from "next/font/google"
@@ -44,7 +45,10 @@ export default function RootLayout({
   suppressHydrationWarning
 >
   <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-    <AuthProvider>{children}</AuthProvider>
+    <AuthProvider>{children}
+<Analytics /> {/* Add this line here */}
+
+    </AuthProvider>
   </ThemeProvider>
 </body>
     </html>

@@ -123,7 +123,8 @@ export default function ForgotCredentialsPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[url('/backgroud.jpg')] bg-cover bg-center bg-no-repeat px-4 animate-in fade-in duration-1000">
+    <div className="min-h-screen flex items-center justify-center font-sans bg-cover bg-center bg-no-repeat bg-fixed animate-in fade-in duration-700"style={{ 
+    backgroundImage: "linear-gradient(rgba(51, 50, 50, 0.53), rgba(51, 50, 50, 0.53)), url('/background.jpg')" }}>
       <Card className="w-full max-w-md shadow-2xl border-0 bg-slate-900/95 backdrop-blur-md animate-in fade-in slide-in-from-bottom-10 duration-1000 ease-out">
         <CardHeader className="space-y-1">
           <Link href="/login" className="flex items-center text-primary hover:underline mb-2">
