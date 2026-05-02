@@ -7,6 +7,7 @@ import ProtectedRoute from "@/components/protected-route"
 import { Users, ChevronRight, ShieldCheck } from "lucide-react"
 import Link from "next/link"
 
+
 export default function StudentsPage() {
   return (
     <ProtectedRoute adminOnly={true}>
@@ -41,7 +42,7 @@ export default function StudentsPage() {
                   </div>
                   <h1 className="text-2xl font-bold tracking-tight text-slate-900">Student Directory</h1>
                 </div>
-                <p className="text-slate-500 max-w-2xl text-sm font-medium">
+                <p className="text-slate-800 max-w-2xl text-sm font-medium">
                   Add, edit, and manage student profiles for Christian Colleges of Southeast Asia. 
                   Ensure all information matches official registrar records.
                 </p>

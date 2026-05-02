@@ -1,12 +1,14 @@
 import { Analytics } from "@vercel/analytics/react"
-import type React from "react"
 import type { Metadata } from "next"
+import type React from "react"
 import { Inter, Poppins } from "next/font/google"
+
 import "./globals.css"
+
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/lib/auth-context"
 
-// Define fonts
+// Fonts
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -23,32 +25,42 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "CHRISTIAN COLLEGES OF SOUTHEAST ASIA",
   description: "Track student check-in and check-out times with QR codes",
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
+
+type RootLayoutProps = Readonly<{
+  children: React.ReactNode
+}>
 
 export default function RootLayout({
   children,
-}: Readonly<{children: React.ReactNode}>) {
+}: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body 
-  className={`${inter.variable} ${poppins.variable} font-sans`}
-  style={{ 
-    backgroundImage: "url('/background.JPG')", // Verify if it's .JPG or .jpg
-    backgroundSize: 'cover', 
-    backgroundPosition: 'center',
-    backgroundAttachment: 'fixed',
-    backgroundRepeat: 'no-repeat'
-  }}
+      <body
   suppressHydrationWarning
+  className={`
+    ${inter.variable}
+    ${poppins.variable}
+    font-sans
+    min-h-screen
+  `}
 >
-  <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-    <AuthProvider>{children}
-<Analytics /> {/* Add this line here */}
+      
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            {children}
 
-    </AuthProvider>
-  </ThemeProvider>
-</body>
+            {/* Vercel Analytics */}
+            <Analytics />
+          </AuthProvider>
+        </ThemeProvider>
+      </body>
     </html>
   )
 }

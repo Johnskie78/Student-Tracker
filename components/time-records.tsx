@@ -11,9 +11,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { 
-  Pencil, Trash2, Calendar, LogIn, LogOut, Clock, Filter, 
-  ChevronDown, FileDown, GraduationCap, School 
+import {
+  Pencil, Trash2, LogIn, LogOut, Clock, Filter,
+  ChevronDown, FileDown, GraduationCap, School
 } from "lucide-react"
 
 import {
@@ -24,7 +24,7 @@ import {
   type TimeRecord,
   type Student,
 } from "@/lib/db"
-import { timeRecordsToCSV, downloadAsFile, formatDateForFilename } from "@/lib/export-utils"
+import { timeRecordsToCSV, downloadAsFile } from "@/lib/export-utils"
 
 // --- Types ---
 interface PairedRecord {
@@ -36,11 +36,22 @@ interface PairedRecord {
 }
 
 // --- Helper Functions ---
-const formatTime = (date: Date | string) => 
+const formatTime = (date: Date | string) =>
   new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
-const getInitials = (firstName?: string, lastName?: string) => 
+const getInitials = (firstName?: string, lastName?: string) =>
   `${firstName?.charAt(0) ?? ""}${lastName?.charAt(0) ?? ""}`.toUpperCase() || "??";
+
+// NEW HELPER FUNCTION: To format Date objects correctly for <input type="datetime-local">
+const formatForDateTimeLocal = (date: Date | string): string => {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = (d.getMonth() + 1).toString().padStart(2, '0');
+  const day = d.getDate().toString().padStart(2, '0');
+  const hours = d.getHours().toString().padStart(2, '0');
+  const minutes = d.getMinutes().toString().padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
 
 // --- Sub-Component: Record Table ---
 // This removes the massive code duplication between tabs
@@ -51,7 +62,7 @@ interface RecordTableProps {
   onDelete: (id: string) => void
 }
 
-function RecordTable({ records, isLoading, onEdit, onDelete }: RecordTableProps) {
+function RecordTable({ records, isLoading, onEdit, onDelete }: Readonly<RecordTableProps>) {
   if (isLoading) {
     return (
       <div className="p-8 text-center">
@@ -140,7 +151,7 @@ export default function TimeRecords() {
   return new Date(now.getTime() - offset).toISOString().split("T")[0];
 });
   const [filterType, setFilterType] = useState<"all" | "in" | "out">("all")
-  
+
   // Dialog State
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [currentRecord, setCurrentRecord] = useState<TimeRecord | null>(null)
@@ -170,9 +181,9 @@ export default function TimeRecords() {
   // --- Logic for Pairing ---
   const processPairs = useCallback((rawRecords: TimeRecord[]) => {
     const filtered = filterType === "all" ? rawRecords : rawRecords.filter(r => r.type === filterType);
-    
+
     const grouped: Record<string, { ins: TimeRecord[], outs: TimeRecord[] }> = {};
-    
+
     filtered.forEach(record => {
       if (!grouped[record.studentId]) grouped[record.studentId] = { ins: [], outs: [] };
       if (record.type === "in") grouped[record.studentId].ins.push(record);
@@ -181,12 +192,12 @@ export default function TimeRecords() {
 
     return Object.entries(grouped).map(([studentId, { ins, outs }]) => {
       const student = studentsMap[studentId] || null;
-      
+
       // Calculate Hours
       let ms = 0;
       const sortedIns = [...ins].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
       const sortedOuts = [...outs].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-      
+
       sortedIns.forEach(checkIn => {
         const inTime = new Date(checkIn.timestamp).getTime();
         const matchIdx = sortedOuts.findIndex(co => new Date(co.timestamp).getTime() > inTime);
@@ -213,7 +224,8 @@ export default function TimeRecords() {
   const handleEditClick = (record: TimeRecord) => {
     setCurrentRecord(record)
     setFormData({
-      timestamp: new Date(record.timestamp).toISOString().slice(0, 16),
+      // UPDATED: Use the new helper to correctly format for datetime-local input
+      timestamp: formatForDateTimeLocal(record.timestamp),
       type: record.type,
     })
     setIsEditDialogOpen(true)
@@ -221,6 +233,8 @@ export default function TimeRecords() {
 
   const handleUpdate = async () => {
     if (!currentRecord) return;
+    // When creating a new Date from a "YYYY-MM-DDTHH:mm" string,
+    // JavaScript interprets it as a local time. This is correct here.
     await updateTimeRecord({ ...currentRecord, timestamp: new Date(formData.timestamp), type: formData.type });
     setIsEditDialogOpen(false);
     loadData();
@@ -245,10 +259,10 @@ export default function TimeRecords() {
       <div className="flex flex-col md:flex-row justify-between gap-4">
         <h2 className="text-2xl font-bold tracking-tight">Time Management</h2>
         <div className="flex flex-wrap gap-2">
-          <Input 
-            type="date" 
-            value={selectedDate} 
-            onChange={(e) => setSelectedDate(e.target.value)} 
+          <Input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
             className="w-auto"
           />
           <DropdownMenu>
@@ -297,9 +311,9 @@ export default function TimeRecords() {
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label>Timestamp</Label>
-              <Input 
-                type="datetime-local" 
-                value={formData.timestamp} 
+              <Input
+                type="datetime-local"
+                value={formData.timestamp}
                 onChange={e => setFormData({...formData, timestamp: e.target.value})}
               />
             </div>

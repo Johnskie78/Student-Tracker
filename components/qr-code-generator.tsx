@@ -12,7 +12,7 @@ interface QRCodeGeneratorProps {
   label?: string
 }
 
-export default function QRCodeGenerator({ value, size = 200, label }: QRCodeGeneratorProps) {
+export default function QRCodeGenerator({ value, size = 200, label }: Readonly<QRCodeGeneratorProps>) {
   const qrRef = useRef<HTMLCanvasElement>(null)
   const [qrDataUrl, setQrDataUrl] = useState<string>("")
   const [error, setError] = useState<string | null>(null)
@@ -73,7 +73,7 @@ export default function QRCodeGenerator({ value, size = 200, label }: QRCodeGene
     link.click()
 
     // Clean up
-    document.body.removeChild(link)
+    link.remove()
   }
 
   const printQRCode = () => {

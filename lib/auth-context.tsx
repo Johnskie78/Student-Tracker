@@ -50,16 +50,14 @@ const DEFAULT_ADMIN: User = {
 const USERS_STORAGE_KEY = "auth_users"
 const CURRENT_USER_KEY = "auth_current_user"
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [user, setUser] = useState<User | null>(null)
   const [status, setStatus] = useState<AuthStatus>("loading")
 
   // Initialize admin users if none exist
   useEffect(() => {
     const storedUsers = localStorage.getItem(USERS_STORAGE_KEY)
-    if (!storedUsers) {
-      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify([DEFAULT_ADMIN]))
-    } else {
+    if (storedUsers) {
       // Migrate existing users to include adminId if they don't have one
       try {
         const users = JSON.parse(storedUsers) as User[]
@@ -82,6 +80,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error("Error migrating users:", error)
       }
+    } else {
+      localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify([DEFAULT_ADMIN]))
     }
   }, [])
 

@@ -47,7 +47,7 @@ export default function QRScanner() {
 
   useEffect(() => {
     // Add event listener for external scanner input
-    window.addEventListener("keydown", handleExternalScannerInput)
+    globalThis.addEventListener("keydown", handleExternalScannerInput)
 
     // Focus on manual input when in manual mode
     if (activeTab === "manual" && manualInputRef.current) {
@@ -65,7 +65,7 @@ export default function QRScanner() {
           console.error("Error during scanner cleanup:", error)
         }
       }
-      window.removeEventListener("keydown", handleExternalScannerInput)
+      globalThis.removeEventListener("keydown", handleExternalScannerInput)
 
       // Clear any pending timers
       if (externalScanTimerRef.current) {
@@ -255,6 +255,7 @@ export default function QRScanner() {
         timestamp: new Date(),
         type: recordType,
         date: today,
+        school: "Higher Education"
       }
 
       await addTimeRecord(newRecord)
@@ -344,13 +345,13 @@ export default function QRScanner() {
                   </Label>
                 </div>
 
-                {!scanning ? (
-                  <Button onClick={startScanner} size="lg" className="text-base font-medium">
-                    Start Scanner
-                  </Button>
-                ) : (
+                {scanning ? (
                   <Button onClick={stopScanner} variant="destructive" size="lg" className="text-base font-medium">
                     Stop Scanner
+                  </Button>
+                ) : (
+                  <Button onClick={startScanner} size="lg" className="text-base font-medium">
+                    Start Scanner
                   </Button>
                 )}
               </div>

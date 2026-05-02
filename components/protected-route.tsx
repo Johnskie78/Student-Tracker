@@ -11,7 +11,7 @@ interface ProtectedRouteProps {
   adminOnly?: boolean
 }
 
-export default function ProtectedRoute({ children, adminOnly = true }: ProtectedRouteProps) {
+export default function ProtectedRoute({ children, adminOnly = true }: Readonly<ProtectedRouteProps>) {
   const { user, status } = useAuth()
   const router = useRouter()
 
@@ -34,7 +34,6 @@ export default function ProtectedRoute({ children, adminOnly = true }: Protected
       setTimeout(() => {
         router.push("/unauthorized")
       }, 0)
-      return
     }
   }, [status, user, router, adminOnly])
 

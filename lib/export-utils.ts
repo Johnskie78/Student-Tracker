@@ -1,11 +1,7 @@
-import type { TimeRecord, Student } from "@/lib/db"
+import { type TimeRecord, type Student } from "./db"
+import { format } from "date-fns"
 
-// Convert time records to CSV format
-export function timeRecordsToCSV(
-  records: TimeRecord[],
-  students: { [key: string]: Student },
-  includeHeaders = true,
-): string {
+export function timeRecordsToCSV(records: TimeRecord[], studentsMap: Record<string, Student>): string {
   const headers = [
     "Date",
     "Time",
@@ -19,65 +15,58 @@ export function timeRecordsToCSV(
     "Major",
     "Semester",
     "Grade Level",
-    "School"
-  ].join(",")
+    "School",
+    "Purpose"
+  ]
 
-  const rows = records.map(record => {
-    const student = students[record.studentId] || {
-      studentId: record.studentId,
-      lastName: "Unknown",
-      firstName: "Unknown",
-      middleName: "",
-      yearLevel: "",
-      course: "",
-      major: "",
-      semester: "",
-      gradeLevel: "",
-      school: "",
-    }
+  const lines: string[] = [headers.join(",")]
 
-    const date = new Date(record.timestamp).toLocaleDateString()
-    const time = new Date(record.timestamp).toLocaleTimeString()
+  records.forEach((record) => {
+    const student = studentsMap[record.studentId]
+    if (!student) return
 
-    return [
+    const date = record.date
+    const time = format(new Date(record.timestamp), "h:mm:ss a")
+    const type = record.type === "in" ? "Check In" : "Check Out"
+    const purpose = record.purpose ?? "" // ✅ Now works because we added it to type
+
+    const row = [
       date,
       time,
-      record.type === "in" ? "Check In" : "Check Out",
+      type,
       student.studentId,
-      `"${student.lastName}"`,
-      `"${student.firstName}"`,
-      `"${student.middleName}"`,
-      student.yearLevel,
-      `"${student.course || student.program || ''}"`,
-      `"${student.major || ''}"`,
-      `"${student.semester || ''}"`,
-      `"${student.gradeLevel || ''}"`,
-      student.school,
-    ].join(",")
+      student.lastName,
+      student.firstName,
+      student.middleName ?? "",
+      student.yearLevel ?? "",
+      student.course ?? "",
+      student.major ?? "",
+      student.semester ?? "",
+      student.gradeLevel ?? "",
+      student.school ?? "",
+      purpose
+    ]
+
+    const escapedRow = row.map(field => `"${String(field).replaceAll('"', '""')}"`)
+    lines.push(escapedRow.join(","))
   })
 
-  return includeHeaders ? `${headers}\n${rows.join("\n")}` : rows.join("\n")
+  return lines.join("\n")
 }
 
-// Download data as a file
-export function downloadAsFile(data: string, filename: string, mimeType: string) {
-  const blob = new Blob([data], { type: mimeType })
+export function downloadAsFile(content: string, filename: string, mimeType: string) {
+  const blob = new Blob([`\uFEFF${content}`], { type: mimeType })
   const url = URL.createObjectURL(blob)
-  const link = document.createElement("a")
-
-  link.href = url
-  link.download = filename
-  document.body.appendChild(link)
-  link.click()
-
-  // Clean up
-  setTimeout(() => {
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-  }, 100)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
 }
 
 // Format date for filenames
 export function formatDateForFilename(date: Date): string {
-  return date.toISOString().split("T")[0]
+  return format(date, "yyyyMMdd")
 }

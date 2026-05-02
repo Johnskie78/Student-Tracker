@@ -33,13 +33,29 @@ export default function Nav() {
   }, [pathname])
 
   return (
-    <div className="bg-white border-b shadow-sm overflow-x-auto">
+  <div
+  className="
+    bg-gradient-to-r
+    from-gray-900/10
+    via-gray-800/5
+    to-gray-900/10
+    border-b border-gray-200/30
+    backdrop-blur-xl
+    shadow-lg
+    overflow-x-auto
+  "
+>
       <div className="container mx-auto flex justify-center">
         <div className="flex space-x-1 p-1">
           <Link href="/scanner" passHref>
             <Button
               variant={activeTab === "scanner" ? "default" : "ghost"}
-              className="flex items-center text-base"
+             className="
+  flex items-center text-base
+  text-white/80
+  hover:text-white
+  hover:bg-white/10
+"
               onClick={() => setActiveTab("scanner")}
             >
               <QrCode className="mr-2 h-5 w-5" />
@@ -50,7 +66,12 @@ export default function Nav() {
           <Link href="/dashboard" passHref>
             <Button
               variant={activeTab === "dashboard" ? "default" : "ghost"}
-              className="flex items-center text-base"
+           className="
+  flex items-center text-base
+  text-white/80
+  hover:text-white
+  hover:bg-white/10
+"
               onClick={() => setActiveTab("dashboard")}
             >
               <QrCode className="mr-2 h-5 w-5" />

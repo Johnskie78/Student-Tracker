@@ -10,6 +10,9 @@ import { LockKeyhole, Clock } from "lucide-react"
 export default function PublicScannerPage() {
   const [currentTime, setCurrentTime] = useState(new Date())
   const [mounted, setMounted] = useState(false)
+  // ✅ Added states for show/hide text
+  const [showPrivacy, setShowPrivacy] = useState(false)
+  const [showSupport, setShowSupport] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -18,26 +21,39 @@ export default function PublicScannerPage() {
   }, [])
 
   return (
-    // Changed background to a soft slate to make the white kiosk "pop"
-    <main className="min-h-screen flex flex-col antialiased font-sans bg-cover bg-center bg-no-repeat bg-fixed animate-in fade-in duration-700"style={{ 
-    backgroundImage: "linear-gradient(rgba(51, 50, 50, 0.53), rgba(51, 50, 50, 0.53)), url('/background.jpg')" }}>
-      {/* PROFESSIONAL KIOSK HEADER */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/60">
+    <main 
+      
+  className="
+    min-h-screen
+    flex
+    flex-col
+    relative
+    overflow-hidden
+    antialiased
+    font-sans
+    pb-[70px]
+  "
+      style={{
+        backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.53), rgba(0, 50, 50, 0.53)), url('/background.jpg')" 
+      }}
+    >
+      {/* HEADER */}
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b  border-slate-200/60">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-5">
             <div className="relative h-14 w-14 group">
-              <Image 
-                src="/Logo.png" 
-                alt="CCSA Logo" 
-                fill 
-                className="object-contain transition-transform group-hover:scale-105" 
+              <Image
+                src="/Logo.png"
+                alt="CCSA Logo"
+                fill
+                className="object-contain transition-transform group-hover:scale-105"
               />
             </div>
             <div className="flex flex-col">
               <h1 className="text-xl font-black tracking-tighter text-slate-900 leading-none">
                 CCSA
               </h1>
-              <p className="text-[10px] font-bold tracking-[0.2em] text-indigo-600 uppercase">
+              <p className="text-[20px] font-bold tracking-[0.2em] text-indigo-600 uppercase">
                 Christian Colleges of Southeast Asia
               </p>
             </div>
@@ -58,8 +74,8 @@ export default function PublicScannerPage() {
             </div>
 
             <Link href="/login">
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className="group gap-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl px-4 transition-all"
               >
                 <LockKeyhole className="w-4 h-4 transition-transform group-hover:-rotate-12" />
@@ -70,43 +86,85 @@ export default function PublicScannerPage() {
         </div>
       </header>
 
-      {/* MAIN KIOSK AREA */}
-      <div className="flex-1 p-6 lg:p-12 flex flex-col items-center justify-center relative">
-        {/* Subtle Background Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full -z-10" />
-        
-        {/* THE CURVED CONTAINER (Matches your screenshots) */}
-        <div className="
-                bg-black/40 backdrop-blur-md 
-                rounded-[1rem] 
-                shadow-[0_8px_30px_rgb(0,0,0,0.1)] 
-                border border-white/10 
-                overflow-hidden 
-                /* THIS IS THE FIX: Uniform padding for all sides */
-                p-8 
-  
-                /* Adds spacing between the header and the search bar/table */
-                flex flex-col gap-6">
-           {/* Inside ScannerContainer, ensure your left panel has 'bg-black/40' 
-             and the right panel has 'bg-[#0c0e17]' 
-           */}
-           <ScannerContainer />
-        </div>
-      </div>
+     {/* MAIN CONTENT */}
 
-      {/* MINIMAL FOOTER */}
+<div className="flex-1 relative flex items-center justify-center px-4 sm:px-6 lg:px-12 overflow-hidden pt-4">
 
-      <footer className="py-6 bg-white border-t border-slate-100">
-        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400">
-          <div className="flex gap-6 text-[11px] font-bold uppercase tracking-widest">
-            <span className="text-indigo-600/60">System Active</span>
-            <span className="hover:text-slate-600 cursor-help transition-colors">Privacy Policy</span>
-            <span className="hover:text-slate-600 cursor-help transition-colors">Support</span>
+  {/* Background Glow */}
+  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] bg-indigo-500/10 blur-[140px] rounded-full pointer-events-none" />
+
+  {/* CENTER WRAPPER */}
+  <div className="relative z-10 w-full flex items-center justify-center">
+    
+    <div className="w-full max-w-6xl mx-auto items-center justify-center">
+      <ScannerContainer />
+    </div>
+
+  </div>
+</div>
+
+      {/* FOOTER */}
+      <footer
+  className="
+    absolute
+    bottom-0
+    left-0
+    right-0
+    z-50
+
+    py-5
+    bg-white/95
+    backdrop-blur-md
+    border-t
+    border-slate-200/50
+
+    shadow-[0_-6px_20px_rgba(0,0,0,0.06)]
+  "
+>
+        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-slate-400">
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-6 text-[11px] font-bold uppercase tracking-widest items-center">
+              {/* ✅ Green online dot + System Active */}
+              <span className="flex items-center gap-2 text-green-600/80">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                System Active
+              </span>
+
+              {/* ✅ Privacy Policy — click to show paragraph */}
+              <span 
+                className="hover:text-slate-600 cursor-pointer transition-colors"
+                onClick={() => setShowPrivacy(!showPrivacy)}
+              >
+                Privacy Policy
+              </span>
+
+              {/* ✅ Support — click to show paragraph */}
+              <span 
+                className="hover:text-slate-600 cursor-pointer transition-colors"
+                onClick={() => setShowSupport(!showSupport)}
+              >
+                Support
+              </span>
+            </div>
+
+            {/* ✅ Privacy Policy Paragraph — shows when clicked */}
+            {showPrivacy && (
+              <p className="text-xs text-slate-600 max-w-md mt-1 leading-relaxed bg-slate-50 p-2 rounded border border-slate-100">
+                We value your privacy. All student data and attendance records are securely stored, encrypted, and used only for official attendance and tracking purposes. We never share personal information with third parties without consent.
+              </p>
+            )}
+
+            {/* ✅ Support Paragraph — shows when clicked */}
+            {showSupport && (
+              <p className="text-xs text-slate-600 max-w-md mt-1 leading-relaxed bg-slate-50 p-2 rounded border border-slate-100">
+                Need help? Contact our system administrator at <strong>ccsaictmicrosoft2024@gmail.com</strong> or visit the IT office during office hours. Available Monday–Friday, 8:00 AM – 5:00 PM.
+              </p>
+            )}
           </div>
-          
+
           <p className="text-xs font-medium">
-            © {mounted ? new Date().getFullYear() : "2024"} <span className="text-slate-600 font-bold">Student Time Tracking</span> 
-            <span className="hidden md:inline mx-2 text-slate-200">|</span> 
+            © {mounted ? new Date().getFullYear() : "2026"} <span className="text-slate-600 font-bold">Student Time Tracking</span>
+            <span className="hidden md:inline mx-2 text-slate-200">|</span>
             v2.4.0
           </p>
         </div>

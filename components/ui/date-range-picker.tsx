@@ -14,7 +14,7 @@ interface DateRangePickerProps {
   className?: string
 }
 
-export function DateRangePicker({ date, onDateChange, className }: DateRangePickerProps) {
+export function DateRangePicker({ date, onDateChange, className }: Readonly<DateRangePickerProps>) {
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover>

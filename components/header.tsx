@@ -34,9 +34,19 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-white border-b shadow-sm">
+  <header
+  className="
+    bg-gradient-to-l
+    from-slate-950
+    via-slate-900
+    to-indigo-950
+    border-b border-white/10
+    backdrop-blur-xl
+    shadow-[0_8px_50px_rgba(0,0,0,0.35)]
+  "
+>
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href={user ? "/dashboard" : "/scanner"} className="text-2xl font-bold text-primary">
+        <Link href={user ? "/dashboard" : "/scanner"} className="text-2xl font-black text-white tracking-tight">
           Student Time Tracking
         </Link>
 

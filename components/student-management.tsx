@@ -277,7 +277,7 @@ export default function StudentManagement() {
     }
   }
 
-  // Update the handleAddStudent function to check for existing student IDs
+  // ✅ ADD STUDENT — SHORT CODE + FULL MAJOR
   const handleAddStudent = async () => {
     try {
       setFormError(null)
@@ -288,11 +288,42 @@ export default function StudentManagement() {
         return
       }
 
+      // ✅ Require Semester for Higher Education
+      if (formData.school === "Higher Education" && !formData.semester) {
+        setFormError("Semester is required for Higher Education students")
+        return
+      }
+
+      // ✅ Require Year Level for Higher Education
+      if (formData.school === "Higher Education" && !formData.yearLevel) {
+        setFormError("Year Level is required for Higher Education students")
+        return
+      }
+
       // Check if student ID already exists
       const existingStudent = await getStudentByStudentId(formData.studentId)
       if (existingStudent) {
         setFormError(`A student with ID ${formData.studentId} already exists`)
         return
+      }
+
+      // ✅ FINAL: FULL NAME IF NO MAJOR | CODE + FULL MAJOR IF HAS MAJOR
+      let autoCourse = ""
+      if (formData.school === "Higher Education") {
+        const programObj = HIGHER_EDUCATION_PROGRAMS.find((p) => p.code === formData.program)
+        const programFullName = programObj?.name || formData.program // FULL NAME
+        const programShortCode = programObj?.code || formData.program // SHORT CODE
+        const majorFull = formData.major?.trim() || ""
+
+        if (majorFull) {
+          // ✅ HAS MAJOR → SHORT CODE + FULL MAJOR
+          autoCourse = `${programShortCode} - ${majorFull.toUpperCase()}`
+        } else {
+          // ✅ NO MAJOR → SHOW FULL PROGRAM NAME
+          autoCourse = programFullName.toUpperCase()
+        }
+      } else {
+        autoCourse = formData.gradeLevel || ""
       }
 
       const newStudent: Student = {
@@ -302,7 +333,7 @@ export default function StudentManagement() {
         lastName: formData.lastName,
         studentId: formData.studentId,
         yearLevel: formData.yearLevel,
-        course: formData.course,
+        course: autoCourse,
         school: formData.school,
         program: formData.program,
         major: formData.major,
@@ -323,7 +354,7 @@ export default function StudentManagement() {
     }
   }
 
-  // Update the handleUpdateStudent function to check for existing student IDs
+  // ✅ UPDATE STUDENT — PRESERVE FORMAT EVEN WHEN CHANGING PHOTO
   const handleUpdateStudent = async () => {
     if (!currentStudent) return
 
@@ -336,12 +367,43 @@ export default function StudentManagement() {
         return
       }
 
+      // ✅ Require Semester for Higher Education
+      if (formData.school === "Higher Education" && !formData.semester) {
+        setFormError("Semester is required for Higher Education students")
+        return
+      }
+
+      // ✅ Require Year Level for Higher Education
+      if (formData.school === "Higher Education" && !formData.yearLevel) {
+        setFormError("Year Level is required for Higher Education students")
+        return
+      }
+
       // Check if student ID already exists and belongs to a different student
       if (formData.studentId !== currentStudent.studentId) {
         const existingStudent = await getStudentByStudentId(formData.studentId)
         if (existingStudent && existingStudent.id !== currentStudent.id) {
           setFormError(`A student with ID ${formData.studentId} already exists`)
           return
+        }
+      }
+
+      // ✅ ONLY RE-GENERATE IF PROGRAM/MAJOR CHANGED — OTHERWISE KEEP EXISTING COURSE
+      let finalCourse = currentStudent.course // KEEP OLD VALUE BY DEFAULT
+      if (
+        formData.program !== currentStudent.program ||
+        formData.major !== currentStudent.major ||
+        formData.school !== currentStudent.school
+      ) {
+        // Only re-format if related fields changed
+        if (formData.school === "Higher Education") {
+          const programObj = HIGHER_EDUCATION_PROGRAMS.find((p) => p.code === formData.program)
+          const courseShortCode = programObj?.code || formData.program
+          const majorFull = formData.major?.trim() || ""
+          finalCourse = courseShortCode
+          if (majorFull) finalCourse += ` - ${majorFull.toUpperCase()}`
+        } else {
+          finalCourse = formData.gradeLevel || ""
         }
       }
 
@@ -352,7 +414,7 @@ export default function StudentManagement() {
         lastName: formData.lastName,
         studentId: formData.studentId,
         yearLevel: formData.yearLevel,
-        course: formData.course,
+        course: finalCourse, // ✅ PRESERVED / CORRECT FORMAT
         school: formData.school,
         program: formData.program,
         major: formData.major,
@@ -379,7 +441,7 @@ export default function StudentManagement() {
     }
   }
 
-  // Add resetForm function to also clear form errors
+  // ✅ UPDATED: Default semester set
   const resetForm = () => {
     setFormData({
       firstName: "",
@@ -391,7 +453,7 @@ export default function StudentManagement() {
       school: activeTab === "higher" ? "Higher Education" : "Basic Education",
       program: "",
       major: "",
-      semester: "",
+      semester: "1st Semester", // ✅ DEFAULT SO NEVER EMPTY
       gradeLevel: "",
       status: "active",
       photoUrl: "",
@@ -873,7 +935,7 @@ export default function StudentManagement() {
                         <SelectValue placeholder="Select Major" />
                       </SelectTrigger>
                       <SelectContent>
-                        {availableMajors && availableMajors.map((major) => (
+                        {availableMajors?.map((major) => (
                           <SelectItem key={major} value={major} className="text-base">
                             {major}
                           </SelectItem>

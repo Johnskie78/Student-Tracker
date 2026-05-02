@@ -77,8 +77,8 @@
 
 @layer base {
   * {
-    border-color: var(--border);
-  }
+  border-color: hsl(var(--border));
+}
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
@@ -177,15 +177,28 @@
   }
 }
 /* Force the background image */
+/* ===== GLOBAL APP BACKGROUND ===== */
+
+html,
 body {
-  background-image: url('/background.JPG') !important;
-  background-size: cover !important;
-  background-attachment: fixed !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
+  min-height: 100%;
 }
 
-/* Make the default theme background transparent so the image shows through */
+body {
+  background-image: url("/background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+
+  /* fallback color while image loads */
+  background-color: #0f172a;
+}
+
+/* Keep shadcn background transparent */
 :root {
   --background: transparent;
 }
@@ -193,6 +206,10 @@ body {
 .dark {
   --background: transparent;
 }
-main, .flex-1 {
-  background-color: transparent !important;
+
+/* Prevent layouts/cards from hiding image */
+main,
+.flex-1,
+[data-slot="content"] {
+  background: transparent !important;
 }
